@@ -11,6 +11,7 @@ namespace game
   internal class Program
   {
     private static List<User> userList = new List<User>();
+
     static void Main(string[] args)
     {
       HttpListener listener = new HttpListener();
@@ -37,8 +38,6 @@ namespace game
         response.OutputStream.Close();
       }
     }
-
-
     static string HandleRegister(HttpListenerRequest request)
     {
       try
@@ -49,21 +48,29 @@ namespace game
         Console.WriteLine($"Request body: {body}"); 
 
         var registerData = JsonConvert.DeserializeObject<RegisterRequest>(body);
-      }
-      catch
-      {
 
+        if (userList.Exists(user => user.Username == registerData.Username))
+        {
+          return JsonConvert.SerializeObject(new { error = "Username already exists" });
+        }
+
+        userList.Add(new User { Username = registerData.Username, Password = registerData.Password });
+        Console.WriteLine($"User {registerData.Username} registered successfully.");
+
+        return JsonConvert.SerializeObject(new { success = true });
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Error: {ex.Message}"); 
+        return JsonConvert.SerializeObject(new { error = "An error occurred." });
       }
     }
   }
-
-
   public class User
   {
     public string Username { get; set; }
     public string Password { get; set; }
   }
-
   public class RegisterRequest
   {
     public string Username { get; set; }
