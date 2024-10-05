@@ -1,79 +1,126 @@
+// See https://aka.ms/new-console-template for more information
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
-namespace game
+namespace CustomHttpServer
 {
   internal class Program
   {
     private static List<User> userList = new List<User>();
 
+    private static Dictionary<string, string> userTokens = new Dictionary<string, string>();
+
     static void Main(string[] args)
     {
-      HttpListener listener = new HttpListener();
-      listener.Prefixes.Add("http://localhost:10001/");
-      listener.Start();
-      Console.WriteLine("Server started at http://localhost:10001/");
+      Console.WriteLine("HttpServer-Demo: use http://localhost:8000/");
+
+      // ===== Start HTTP Server =====
+      // Start TCP-Server and interpret textual data as HTTP
+      var server = new TcpListener(IPAddress.Any, 8000);
+      server.Start();
 
       while (true)
       {
-        HttpListenerContext context = listener.GetContext();
-        HttpListenerRequest request = context.Request;
-        HttpListenerResponse response = context.Response;
-
-        string responseString = string.Empty;
-
-        if (request.HttpMethod == "POST" && request.Url.AbsolutePath == "/register")
+        try
         {
-          responseString = HandleRegister(request);
-        }
+          // 1. Wait for incoming connection
+          var client = server.AcceptTcpClient();
+          Console.WriteLine("Accepted new client connection.");
 
-        byte[] buffer = Encoding.UTF8.GetBytes(responseString);
-        response.ContentLength64 = buffer.Length;
-        response.OutputStream.Write(buffer, 0, buffer.Length);
-        response.OutputStream.Close();
+          HandleClient(client);
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine($"Server Error: {ex.Message}");
+        }
       }
     }
-    static string HandleRegister(HttpListenerRequest request)
+
+    static void HandleClient(TcpClient client)
     {
-      try
+      using var stream = client.GetStream();
+      using var reader = new StreamReader(stream);
+      using var writer = new StreamWriter(stream) { AutoFlush = true };
+
+      // 2. HTTP-Request - 1st line
+      // e.g., "POST /register HTTP/1.1"
+      string? requestLine = reader.ReadLine();
+      if (string.IsNullOrEmpty(requestLine))
       {
-        Console.WriteLine($"Received {request.HttpMethod} request for {request.Url.AbsolutePath}");
-
-        var body = new System.IO.StreamReader(request.InputStream).ReadToEnd();
-        Console.WriteLine($"Request body: {body}"); 
-
-        var registerData = JsonConvert.DeserializeObject<RegisterRequest>(body);
-
-        if (userList.Exists(user => user.Username == registerData.Username))
-        {
-          return JsonConvert.SerializeObject(new { error = "Username already exists" });
-        }
-
-        userList.Add(new User { Username = registerData.Username, Password = registerData.Password });
-        Console.WriteLine($"User {registerData.Username} registered successfully.");
-
-        return JsonConvert.SerializeObject(new { success = true });
+        Console.WriteLine("Received empty request.");
+        return;
       }
-      catch (Exception ex)
+
+      var requestParts = requestLine.Split(' ');
+      if (requestParts.Length < 3)
       {
-        Console.WriteLine($"Error: {ex.Message}"); 
-        return JsonConvert.SerializeObject(new { error = "An error occurred." });
+        Console.WriteLine("Invalid HTTP request line.");
+        SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "Invalid HTTP request line" }));
+        return;
+      }
+
+      var method = requestParts[0];
+      var path = requestParts[1];
+      var version = requestParts[2];
+      Console.WriteLine($"Method: {method}, Path: {path}, Version: {version}");
+
+      // 3. HTTP-Request - Headers
+      // Read headers until an empty line is encountered
+      Dictionary<string, string> headers = new Dictionary<string, string>();
+      int contentLength = 0;
+      string? line;
+      while (!string.IsNullOrEmpty(line = reader.ReadLine()))
+      {
+        var headerParts = line.Split(new[] { ':' }, 2);
+        if (headerParts.Length != 2)
+          continue;
+
+        var headerName = headerParts[0].Trim();
+        var headerValue = headerParts[1].Trim();
+        headers[headerName] = headerValue;
+        Console.WriteLine($"Header: {headerName} = {headerValue}");
+
+        if (headerName.Equals("Content-Length", StringComparison.OrdinalIgnoreCase))
+        {
+          int.TryParse(headerValue, out contentLength);
+        }
+      }
+
+
+      static void SendResponse(StreamWriter writer, string status, string contentType, string body)
+      {
+        try
+        {
+          writer.WriteLine($"HTTP/1.1 {status}");
+          writer.WriteLine($"Content-Type: {contentType}");
+          writer.WriteLine($"Content-Length: {Encoding.UTF8.GetByteCount(body)}");
+          writer.WriteLine("Connection: close");
+          writer.WriteLine();
+          writer.WriteLine(body);
+        }
+        catch (Exception ex)
+        {
+          Console.WriteLine($"SendResponse Error: {ex.Message}");
+        }
       }
     }
-  }
-  public class User
-  {
-    public string Username { get; set; }
-    public string Password { get; set; }
-  }
-  public class RegisterRequest
-  {
-    public string Username { get; set; }
-    public string Password { get; set; }
+
+    public class User
+    {
+      public string Username { get; set; }
+      public string Password { get; set; }
+    }
+
+    public class RegisterRequest
+    {
+      public string Username { get; set; }
+      public string Password { get; set; }
+    }
   }
 }
