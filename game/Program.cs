@@ -92,6 +92,22 @@ namespace CustomHttpServer
         }
       }
 
+      // 4. HTTP-Request - Body
+      string requestBody = string.Empty;
+      if (contentLength > 0)
+      {
+        char[] buffer = new char[contentLength];
+        int totalRead = 0;
+        while (totalRead < contentLength)
+        {
+          int read = reader.Read(buffer, totalRead, contentLength - totalRead);
+          if (read == 0)
+            break; // Client closed connection
+          totalRead += read;
+        }
+        requestBody = new string(buffer);
+      }
+      Console.WriteLine($"Body: {requestBody}");
 
       static void SendResponse(StreamWriter writer, string status, string contentType, string body)
       {
