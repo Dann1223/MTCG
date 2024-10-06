@@ -12,8 +12,10 @@ namespace CustomHttpServer
 {
   internal class Program
   {
+    // User list
     private static List<User> userList = new List<User>();
 
+    // The correspondence between users and tokens
     private static Dictionary<string, string> userTokens = new Dictionary<string, string>();
 
     static void Main(string[] args)
@@ -33,6 +35,7 @@ namespace CustomHttpServer
           var client = server.AcceptTcpClient();
           Console.WriteLine("Accepted new client connection.");
 
+          // Process client requests
           HandleClient(client);
         }
         catch (Exception ex)
@@ -48,7 +51,7 @@ namespace CustomHttpServer
       using var reader = new StreamReader(stream);
       using var writer = new StreamWriter(stream) { AutoFlush = true };
 
-      // 2. HTTP-Request - 1st line
+      //  HTTP-Request - 1st line
       // e.g., "POST /register HTTP/1.1"
       string? requestLine = reader.ReadLine();
       if (string.IsNullOrEmpty(requestLine))
@@ -70,7 +73,7 @@ namespace CustomHttpServer
       var version = requestParts[2];
       Console.WriteLine($"Method: {method}, Path: {path}, Version: {version}");
 
-      // 3. HTTP-Request - Headers
+      // HTTP-Request - Headers
       // Read headers until an empty line is encountered
       Dictionary<string, string> headers = new Dictionary<string, string>();
       int contentLength = 0;
@@ -92,7 +95,7 @@ namespace CustomHttpServer
         }
       }
 
-      // 4. HTTP-Request - Body
+      // HTTP-Request - Body
       string requestBody = string.Empty;
       if (contentLength > 0)
       {
@@ -109,7 +112,7 @@ namespace CustomHttpServer
       }
       Console.WriteLine($"Body: {requestBody}");
 
-      // 5. 路由处理
+      // Routing processing
       if (method.Equals("POST", StringComparison.OrdinalIgnoreCase))
       {
         if (path.Equals("/register", StringComparison.OrdinalIgnoreCase))
@@ -127,7 +130,7 @@ namespace CustomHttpServer
       }
       else if (method.Equals("GET", StringComparison.OrdinalIgnoreCase))
       {
-        // 示例：添加更多 GET 路由，如 /cards 等
+        // Example: Add more GET routes, such as /cards, etc.
         SendResponse(writer, "404 Not Found", "application/json", JsonConvert.SerializeObject(new { error = "Endpoint not found" }));
       }
       else
@@ -138,36 +141,116 @@ namespace CustomHttpServer
       client.Close();
     }
 
-
-
-    static void SendResponse(StreamWriter writer, string status, string contentType, string body)
+    static void HandleRegister(StreamWriter writer, string requestBody)
+    {
+      try
       {
-        try
+        if (string.IsNullOrWhiteSpace(requestBody))
         {
-          writer.WriteLine($"HTTP/1.1 {status}");
-          writer.WriteLine($"Content-Type: {contentType}");
-          writer.WriteLine($"Content-Length: {Encoding.UTF8.GetByteCount(body)}");
-          writer.WriteLine("Connection: close");
-          writer.WriteLine();
-          writer.WriteLine(body);
+          SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "Request body cannot be empty" }));
+          return;
         }
-        catch (Exception ex)
+
+        var registerRequest = JsonConvert.DeserializeObject<RegisterRequest>(requestBody);
+        if (registerRequest == null || string.IsNullOrWhiteSpace(registerRequest.Username) || string.IsNullOrWhiteSpace(registerRequest.Password))
         {
-          Console.WriteLine($"SendResponse Error: {ex.Message}");
+          SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "Invalid registration data" }));
+          return;
         }
+
+        if (userList.Any(u => u.Username.Equals(registerRequest.Username, StringComparison.OrdinalIgnoreCase)))
+        {
+          SendResponse(writer, "409 Conflict", "application/json", JsonConvert.SerializeObject(new { error = "Username already exists" }));
+          return;
+        }
+
+        userList.Add(new User { Username = registerRequest.Username, Password = registerRequest.Password });
+        Console.WriteLine($"User '{registerRequest.Username}' registered successfully.");
+
+        SendResponse(writer, "200 OK", "application/json", JsonConvert.SerializeObject(new { success = true, message = "User registered successfully" }));
+      }
+      catch (JsonException)
+      {
+        SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "Malformed JSON" }));
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Register Error: {ex.Message}");
+        SendResponse(writer, "500 Internal Server Error", "application/json", JsonConvert.SerializeObject(new { error = "Internal server error" }));
       }
     }
 
-    public class User
+    static void HandleLogin(StreamWriter writer, string requestBody)
     {
-      public string Username { get; set; }
-      public string Password { get; set; }
+      try
+      {
+        if (string.IsNullOrWhiteSpace(requestBody))
+        {
+          SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "Request body cannot be empty" }));
+          return;
+        }
+
+        var loginRequest = JsonConvert.DeserializeObject<RegisterRequest>(requestBody);
+        if (loginRequest == null || string.IsNullOrWhiteSpace(loginRequest.Username) || string.IsNullOrWhiteSpace(loginRequest.Password))
+        {
+          SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "Invalid login data" }));
+          return;
+        }
+
+        var user = userList.FirstOrDefault(u => u.Username.Equals(loginRequest.Username, StringComparison.OrdinalIgnoreCase) && u.Password == loginRequest.Password);
+        if (user == null)
+        {
+          SendResponse(writer, "401 Unauthorized", "application/json", JsonConvert.SerializeObject(new { error = "Invalid username or password" }));
+          return;
+        }
+
+        // Generate Token
+        string token = Guid.NewGuid().ToString();
+        userTokens[user.Username] = token;
+        Console.WriteLine($"User '{user.Username}' logged in successfully. Token: {token}");
+
+        SendResponse(writer, "200 OK", "application/json", JsonConvert.SerializeObject(new { success = true, token = token }));
+      }
+      catch (JsonException)
+      {
+        SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "Malformed JSON" }));
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"Login Error: {ex.Message}");
+        SendResponse(writer, "500 Internal Server Error", "application/json", JsonConvert.SerializeObject(new { error = "Internal server error" }));
+      }
     }
 
-    public class RegisterRequest
+    static void SendResponse(StreamWriter writer, string status, string contentType, string body)
     {
-      public string Username { get; set; }
-      public string Password { get; set; }
+      try
+      {
+        writer.WriteLine($"HTTP/1.1 {status}");
+        writer.WriteLine($"Content-Type: {contentType}");
+        writer.WriteLine($"Content-Length: {Encoding.UTF8.GetByteCount(body)}");
+        writer.WriteLine("Connection: close");
+        writer.WriteLine();
+        writer.WriteLine(body);
+      }
+      catch (Exception ex)
+      {
+        Console.WriteLine($"SendResponse Error: {ex.Message}");
+      }
     }
+  }
+
+  // User class
+  public class User
+  {
+    public string Username { get; set; }
+    public string Password { get; set; }
+  }
+
+  //Registration and login request class
+  public class RegisterRequest
+  {
+    public string Username { get; set; }
+    public string Password { get; set; }
   }
 }
