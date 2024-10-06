@@ -109,7 +109,38 @@ namespace CustomHttpServer
       }
       Console.WriteLine($"Body: {requestBody}");
 
-      static void SendResponse(StreamWriter writer, string status, string contentType, string body)
+      // 5. 路由处理
+      if (method.Equals("POST", StringComparison.OrdinalIgnoreCase))
+      {
+        if (path.Equals("/register", StringComparison.OrdinalIgnoreCase))
+        {
+          HandleRegister(writer, requestBody);
+        }
+        else if (path.Equals("/login", StringComparison.OrdinalIgnoreCase))
+        {
+          HandleLogin(writer, requestBody);
+        }
+        else
+        {
+          SendResponse(writer, "404 Not Found", "application/json", JsonConvert.SerializeObject(new { error = "Endpoint not found" }));
+        }
+      }
+      else if (method.Equals("GET", StringComparison.OrdinalIgnoreCase))
+      {
+        // 示例：添加更多 GET 路由，如 /cards 等
+        SendResponse(writer, "404 Not Found", "application/json", JsonConvert.SerializeObject(new { error = "Endpoint not found" }));
+      }
+      else
+      {
+        SendResponse(writer, "405 Method Not Allowed", "application/json", JsonConvert.SerializeObject(new { error = "Method not allowed" }));
+      }
+
+      client.Close();
+    }
+
+
+
+    static void SendResponse(StreamWriter writer, string status, string contentType, string body)
       {
         try
         {
