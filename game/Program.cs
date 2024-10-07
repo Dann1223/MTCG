@@ -8,7 +8,7 @@ using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
 
-namespace CustomHttpServer
+namespace game
 {
   internal class Program
   {
@@ -241,11 +241,7 @@ namespace CustomHttpServer
   }
 
   // User class
-  public class User
-  {
-    public string Username { get; set; }
-    public string Password { get; set; }
-  }
+
 
   //Registration and login request class
   public class RegisterRequest
