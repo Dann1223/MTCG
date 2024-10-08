@@ -30,12 +30,6 @@ namespace client
         return;
       }
 
-      if (!Regex.IsMatch(email, @"^[^@\s]+@[^@\s]+\.[^@\s]+$"))
-      {
-        MessageBox.Show("请输入有效的电子邮件地址。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return;
-      }
-
       var registerRequest = new
       {
         Name = name,
@@ -46,6 +40,7 @@ namespace client
       var json = JsonConvert.SerializeObject(registerRequest);
       var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+      Console.WriteLine($"注册请求发送的数据: {json}");
       try
       {
         HttpResponseMessage response = await httpClient.PostAsync("http://localhost:8000/register", content);
@@ -55,7 +50,8 @@ namespace client
         if (response.IsSuccessStatusCode)
         {
           MessageBox.Show($"注册成功！服务器响应: {responseBody}", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
-        }
+          this.Close();
+          }
         else
         {
           // 显示详细的错误信息

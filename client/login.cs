@@ -1,8 +1,8 @@
 using Newtonsoft.Json;
+using System;
 using System.Net.Http;
 using System.Text;
 using System.Windows.Forms;
-using System;
 
 namespace client
 {
@@ -44,7 +44,16 @@ namespace client
 
         if (response.IsSuccessStatusCode)
         {
-          MessageBox.Show($"登录成功！服务器响应: {responseBody}", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          // 解析响应内容
+          var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(responseBody);
+          string name = loginResponse.Name; // 假设服务器返回的 JSON 包含名称
+          int gold = loginResponse.Gold; // 假设服务器返回的 JSON 包含金币数量
+          string token = loginResponse.Token; // 假设服务器返回的 JSON 包含令牌
+
+          // 显示 Home 窗体并传递用户信息
+          home homeForm = new home(name, gold, token);
+          homeForm.Show();
+          this.Hide(); // 隐藏当前登录窗体
         }
         else
         {
@@ -78,7 +87,15 @@ namespace client
     {
       register registerForm = new register(); // 确保使用小写的类名
       registerForm.Show(); // 显示注册窗体
-      this.Hide(); // 隐藏当前登录窗体
+                           //this.Hide(); // 隐藏当前登录窗体
+    }
+
+    // 将 LoginResponse 类嵌入到 login 类中
+    private class LoginResponse
+    {
+      public string Name { get; set; } // 假设服务器返回的用户名称
+      public int Gold { get; set; } // 假设服务器返回的金币数量
+      public string Token { get; set; } // 假设服务器返回的令牌
     }
   }
 }

@@ -40,9 +40,10 @@
             // 
             // MTCGRegister
             // 
-            this.MTCGRegister.Location = new System.Drawing.Point(286, 281);
+            this.MTCGRegister.Location = new System.Drawing.Point(191, 395);
+            this.MTCGRegister.Margin = new System.Windows.Forms.Padding(4);
             this.MTCGRegister.Name = "MTCGRegister";
-            this.MTCGRegister.Size = new System.Drawing.Size(96, 23);
+            this.MTCGRegister.Size = new System.Drawing.Size(144, 34);
             this.MTCGRegister.TabIndex = 0;
             this.MTCGRegister.Text = "Register";
             this.MTCGRegister.UseVisualStyleBackColor = true;
@@ -50,9 +51,10 @@
             // 
             // MTCGClear
             // 
-            this.MTCGClear.Location = new System.Drawing.Point(454, 281);
+            this.MTCGClear.Location = new System.Drawing.Point(432, 395);
+            this.MTCGClear.Margin = new System.Windows.Forms.Padding(4);
             this.MTCGClear.Name = "MTCGClear";
-            this.MTCGClear.Size = new System.Drawing.Size(94, 23);
+            this.MTCGClear.Size = new System.Drawing.Size(141, 34);
             this.MTCGClear.TabIndex = 1;
             this.MTCGClear.Text = "Clear";
             this.MTCGClear.UseVisualStyleBackColor = true;
@@ -61,59 +63,65 @@
             // MTCGEmail
             // 
             this.MTCGEmail.AutoSize = true;
-            this.MTCGEmail.Location = new System.Drawing.Point(284, 65);
+            this.MTCGEmail.Location = new System.Drawing.Point(188, 98);
+            this.MTCGEmail.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.MTCGEmail.Name = "MTCGEmail";
-            this.MTCGEmail.Size = new System.Drawing.Size(41, 12);
+            this.MTCGEmail.Size = new System.Drawing.Size(62, 18);
             this.MTCGEmail.TabIndex = 2;
             this.MTCGEmail.Text = "E-Mail";
             // 
             // MTCGName
             // 
             this.MTCGName.AutoSize = true;
-            this.MTCGName.Location = new System.Drawing.Point(284, 142);
+            this.MTCGName.Location = new System.Drawing.Point(188, 200);
+            this.MTCGName.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.MTCGName.Name = "MTCGName";
-            this.MTCGName.Size = new System.Drawing.Size(29, 12);
+            this.MTCGName.Size = new System.Drawing.Size(44, 18);
             this.MTCGName.TabIndex = 3;
             this.MTCGName.Text = "Name";
             // 
             // MTCGPassword
             // 
             this.MTCGPassword.AutoSize = true;
-            this.MTCGPassword.Location = new System.Drawing.Point(284, 206);
+            this.MTCGPassword.Location = new System.Drawing.Point(188, 304);
+            this.MTCGPassword.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.MTCGPassword.Name = "MTCGPassword";
-            this.MTCGPassword.Size = new System.Drawing.Size(53, 12);
+            this.MTCGPassword.Size = new System.Drawing.Size(80, 18);
             this.MTCGPassword.TabIndex = 4;
             this.MTCGPassword.Text = "Password";
             // 
             // textEmail
             // 
-            this.textEmail.Location = new System.Drawing.Point(412, 65);
+            this.textEmail.Location = new System.Drawing.Point(371, 98);
+            this.textEmail.Margin = new System.Windows.Forms.Padding(4);
             this.textEmail.Name = "textEmail";
-            this.textEmail.Size = new System.Drawing.Size(136, 21);
+            this.textEmail.Size = new System.Drawing.Size(202, 28);
             this.textEmail.TabIndex = 5;
             this.textEmail.TextChanged += new System.EventHandler(this.textEmail_TextChanged);
             // 
             // textName
             // 
-            this.textName.Location = new System.Drawing.Point(412, 133);
+            this.textName.Location = new System.Drawing.Point(371, 200);
+            this.textName.Margin = new System.Windows.Forms.Padding(4);
             this.textName.Name = "textName";
-            this.textName.Size = new System.Drawing.Size(136, 21);
+            this.textName.Size = new System.Drawing.Size(202, 28);
             this.textName.TabIndex = 6;
             this.textName.TextChanged += new System.EventHandler(this.textName_TextChanged);
             // 
             // textPassword
             // 
-            this.textPassword.Location = new System.Drawing.Point(412, 203);
+            this.textPassword.Location = new System.Drawing.Point(371, 301);
+            this.textPassword.Margin = new System.Windows.Forms.Padding(4);
             this.textPassword.Name = "textPassword";
-            this.textPassword.Size = new System.Drawing.Size(136, 21);
+            this.textPassword.Size = new System.Drawing.Size(202, 28);
             this.textPassword.TabIndex = 7;
             this.textPassword.TextChanged += new System.EventHandler(this.textPassword_TextChanged);
             // 
             // register
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(800, 450);
+            this.ClientSize = new System.Drawing.Size(793, 530);
             this.Controls.Add(this.textPassword);
             this.Controls.Add(this.textName);
             this.Controls.Add(this.textEmail);
@@ -122,6 +130,7 @@
             this.Controls.Add(this.MTCGEmail);
             this.Controls.Add(this.MTCGClear);
             this.Controls.Add(this.MTCGRegister);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "register";
             this.Text = "register";
             this.ResumeLayout(false);

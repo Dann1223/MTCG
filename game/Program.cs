@@ -17,6 +17,21 @@ namespace game
 
     static void Main(string[] args)
     {
+      User u = new User();
+      u.Name = "dandan";
+      u.Email = "666@666";
+      u.Password = "987654321";
+      u.Gold = "20";
+      u.Token = "66666666";
+      userList.Add(u);
+
+      MagicCard WaterGun = new MagicCard("watergun", "Fire", 20, "Shoot waterguns");
+      //WaterGun.Display();//show card
+
+      //Console.WriteLine(); 
+      MonsterCard dragon = new MonsterCard("Blakc Dragon", "Water", 40, "Dragon");
+      //dragon.Display();
+
       Console.WriteLine("HttpServer-Demo: use http://localhost:8000/");
 
       // ===== 启动 HTTP 服务器 =====
@@ -29,14 +44,14 @@ namespace game
         {
           // 1. 等待客户端连接
           var client = server.AcceptTcpClient();
-          Console.WriteLine("接受新的客户端连接。");
+          Console.WriteLine("Accept new client connections.");
 
           // 处理客户端请求
           HttpHandlers.HandleClient(client, userList, userTokens);
         }
         catch (Exception ex)
         {
-          Console.WriteLine($"服务器错误: {ex.Message}");
+          Console.WriteLine($"Server Error: {ex.Message}");
         }
       }
     }

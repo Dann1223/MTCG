@@ -28,7 +28,7 @@ namespace game
       if (requestParts.Length < 3)
       {
         Console.WriteLine("无效的 HTTP 请求行。");
-        SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "无效的 HTTP 请求行" }));
+        SendResponse(writer, "402 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "无效的 HTTP 请求行" }));
         return;
       }
 
@@ -107,12 +107,14 @@ namespace game
     {
       try
       {
+        // 检查请求体是否为空
         if (string.IsNullOrWhiteSpace(requestBody))
         {
           SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "请求正文不能为空" }));
           return;
         }
 
+        // 尝试将请求体解析为注册请求
         var registerRequest = JsonConvert.DeserializeObject<RegisterRequest>(requestBody);
         if (registerRequest == null || string.IsNullOrWhiteSpace(registerRequest.Name) || string.IsNullOrWhiteSpace(registerRequest.Email) || string.IsNullOrWhiteSpace(registerRequest.Password))
         {
@@ -120,9 +122,16 @@ namespace game
           return;
         }
 
+        // 检查用户名或电子邮件是否已经存在
         if (userList.Any(u => u.Name.Equals(registerRequest.Name, StringComparison.OrdinalIgnoreCase)))
         {
           SendResponse(writer, "409 Conflict", "application/json", JsonConvert.SerializeObject(new { error = "用户名已存在" }));
+          return;
+        }
+
+        if (userList.Any(u => u.Email.Equals(registerRequest.Email, StringComparison.OrdinalIgnoreCase)))
+        {
+          SendResponse(writer, "409 Conflict", "application/json", JsonConvert.SerializeObject(new { error = "电子邮件已存在" }));
           return;
         }
 
@@ -131,6 +140,7 @@ namespace game
         userList.Add(newUser);
         Console.WriteLine($"用户 '{newUser.Name}' 注册成功。");
 
+        // 返回成功响应
         SendResponse(writer, "200 OK", "application/json", JsonConvert.SerializeObject(new { success = true, message = "用户注册成功", gold = newUser.Gold }));
       }
       catch (JsonException)
@@ -144,20 +154,21 @@ namespace game
       }
     }
 
+
     static void HandleLogin(StreamWriter writer, string requestBody, List<User> userList, Dictionary<string, string> userTokens)
     {
       try
       {
         if (string.IsNullOrWhiteSpace(requestBody))
         {
-          SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "请求正文不能为空" }));
+          SendResponse(writer, "402 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "请求正文不能为空" }));
           return;
         }
 
         var loginRequest = JsonConvert.DeserializeObject<LoginRequest>(requestBody);
         if (loginRequest == null || string.IsNullOrWhiteSpace(loginRequest.Email) || string.IsNullOrWhiteSpace(loginRequest.Password))
         {
-          SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "无效的登录数据" }));
+          SendResponse(writer, "403 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "无效的登录数据" }));
           return;
         }
 
@@ -174,11 +185,11 @@ namespace game
         userTokens[user.Name] = token; // 你可以保留用户名作为键
         Console.WriteLine($"用户 '{user.Name}' 登录成功。令牌: {token}");
 
-        SendResponse(writer, "200 OK", "application/json", JsonConvert.SerializeObject(new { success = true, token = token, gold = user.Gold }));
+        SendResponse(writer, "200 OK", "application/json", JsonConvert.SerializeObject(new { success = true, name = user.Name, token = token, gold = user.Gold }));
       }
       catch (JsonException)
       {
-        SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "JSON 格式错误" }));
+        SendResponse(writer, "410 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "JSON 格式错误" }));
       }
       catch (Exception ex)
       {
