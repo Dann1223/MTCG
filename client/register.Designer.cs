@@ -1,4 +1,4 @@
-namespace client
+﻿namespace client
 {
   partial class register
   {
@@ -28,75 +28,100 @@ namespace client
     /// </summary>
     private void InitializeComponent()
     {
-            this.button1 = new System.Windows.Forms.Button();
-            this.button2 = new System.Windows.Forms.Button();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.textBox1 = new System.Windows.Forms.TextBox();
-            this.textBox2 = new System.Windows.Forms.TextBox();
+            this.MTCGRegister = new System.Windows.Forms.Button();
+            this.MTCGClear = new System.Windows.Forms.Button();
+            this.MTCGEmail = new System.Windows.Forms.Label();
+            this.MTCGName = new System.Windows.Forms.Label();
+            this.MTCGPassword = new System.Windows.Forms.Label();
+            this.textEmail = new System.Windows.Forms.TextBox();
+            this.textName = new System.Windows.Forms.TextBox();
+            this.textPassword = new System.Windows.Forms.TextBox();
             this.SuspendLayout();
             // 
-            // button1
+            // MTCGRegister
             // 
-            this.button1.Location = new System.Drawing.Point(253, 201);
-            this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(75, 23);
-            this.button1.TabIndex = 0;
-            this.button1.Text = "button1";
-            this.button1.UseVisualStyleBackColor = true;
+            this.MTCGRegister.Location = new System.Drawing.Point(286, 281);
+            this.MTCGRegister.Name = "MTCGRegister";
+            this.MTCGRegister.Size = new System.Drawing.Size(96, 23);
+            this.MTCGRegister.TabIndex = 0;
+            this.MTCGRegister.Text = "Register";
+            this.MTCGRegister.UseVisualStyleBackColor = true;
+            this.MTCGRegister.Click += new System.EventHandler(this.MTCGRegister_Click);
             // 
-            // button2
+            // MTCGClear
             // 
-            this.button2.Location = new System.Drawing.Point(430, 201);
-            this.button2.Name = "button2";
-            this.button2.Size = new System.Drawing.Size(75, 23);
-            this.button2.TabIndex = 1;
-            this.button2.Text = "button2";
-            this.button2.UseVisualStyleBackColor = true;
+            this.MTCGClear.Location = new System.Drawing.Point(454, 281);
+            this.MTCGClear.Name = "MTCGClear";
+            this.MTCGClear.Size = new System.Drawing.Size(94, 23);
+            this.MTCGClear.TabIndex = 1;
+            this.MTCGClear.Text = "Clear";
+            this.MTCGClear.UseVisualStyleBackColor = true;
+            this.MTCGClear.Click += new System.EventHandler(this.MTCGClear_Click);
             // 
-            // label1
+            // MTCGEmail
             // 
-            this.label1.AutoSize = true;
-            this.label1.Location = new System.Drawing.Point(250, 58);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(62, 18);
-            this.label1.TabIndex = 2;
-            this.label1.Text = "label1";
+            this.MTCGEmail.AutoSize = true;
+            this.MTCGEmail.Location = new System.Drawing.Point(284, 65);
+            this.MTCGEmail.Name = "MTCGEmail";
+            this.MTCGEmail.Size = new System.Drawing.Size(41, 12);
+            this.MTCGEmail.TabIndex = 2;
+            this.MTCGEmail.Text = "E-Mail";
             // 
-            // label2
+            // MTCGName
             // 
-            this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(250, 126);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(62, 18);
-            this.label2.TabIndex = 3;
-            this.label2.Text = "label2";
+            this.MTCGName.AutoSize = true;
+            this.MTCGName.Location = new System.Drawing.Point(284, 142);
+            this.MTCGName.Name = "MTCGName";
+            this.MTCGName.Size = new System.Drawing.Size(29, 12);
+            this.MTCGName.TabIndex = 3;
+            this.MTCGName.Text = "Name";
             // 
-            // textBox1
+            // MTCGPassword
             // 
-            this.textBox1.Location = new System.Drawing.Point(416, 116);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 28);
-            this.textBox1.TabIndex = 4;
+            this.MTCGPassword.AutoSize = true;
+            this.MTCGPassword.Location = new System.Drawing.Point(284, 206);
+            this.MTCGPassword.Name = "MTCGPassword";
+            this.MTCGPassword.Size = new System.Drawing.Size(53, 12);
+            this.MTCGPassword.TabIndex = 4;
+            this.MTCGPassword.Text = "Password";
             // 
-            // textBox2
+            // textEmail
             // 
-            this.textBox2.Location = new System.Drawing.Point(416, 58);
-            this.textBox2.Name = "textBox2";
-            this.textBox2.Size = new System.Drawing.Size(100, 28);
-            this.textBox2.TabIndex = 5;
+            this.textEmail.Location = new System.Drawing.Point(412, 65);
+            this.textEmail.Name = "textEmail";
+            this.textEmail.Size = new System.Drawing.Size(136, 21);
+            this.textEmail.TabIndex = 5;
+            this.textEmail.TextChanged += new System.EventHandler(this.textEmail_TextChanged);
+            // 
+            // textName
+            // 
+            this.textName.Location = new System.Drawing.Point(412, 133);
+            this.textName.Name = "textName";
+            this.textName.Size = new System.Drawing.Size(136, 21);
+            this.textName.TabIndex = 6;
+            this.textName.TextChanged += new System.EventHandler(this.textName_TextChanged);
+            // 
+            // textPassword
+            // 
+            this.textPassword.Location = new System.Drawing.Point(412, 203);
+            this.textPassword.Name = "textPassword";
+            this.textPassword.Size = new System.Drawing.Size(136, 21);
+            this.textPassword.TabIndex = 7;
+            this.textPassword.TextChanged += new System.EventHandler(this.textPassword_TextChanged);
             // 
             // register
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(9F, 18F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.textBox2);
-            this.Controls.Add(this.textBox1);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.button2);
-            this.Controls.Add(this.button1);
+            this.Controls.Add(this.textPassword);
+            this.Controls.Add(this.textName);
+            this.Controls.Add(this.textEmail);
+            this.Controls.Add(this.MTCGPassword);
+            this.Controls.Add(this.MTCGName);
+            this.Controls.Add(this.MTCGEmail);
+            this.Controls.Add(this.MTCGClear);
+            this.Controls.Add(this.MTCGRegister);
             this.Name = "register";
             this.Text = "register";
             this.ResumeLayout(false);
@@ -106,11 +131,13 @@ namespace client
 
     #endregion
 
-    private System.Windows.Forms.Button button1;
-    private System.Windows.Forms.Button button2;
-    private System.Windows.Forms.Label label1;
-    private System.Windows.Forms.Label label2;
-    private System.Windows.Forms.TextBox textBox1;
-    private System.Windows.Forms.TextBox textBox2;
+    private System.Windows.Forms.Button MTCGRegister;
+    private System.Windows.Forms.Button MTCGClear;
+    private System.Windows.Forms.Label MTCGEmail;
+    private System.Windows.Forms.Label MTCGName;
+    private System.Windows.Forms.Label MTCGPassword;
+    private System.Windows.Forms.TextBox textEmail;
+    private System.Windows.Forms.TextBox textName;
+    private System.Windows.Forms.TextBox textPassword;
   }
 }
