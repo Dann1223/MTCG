@@ -9,10 +9,10 @@ namespace game
 {
   internal class Program
   {
-    // 用户列表
+    // User list
     private static List<User> userList = new List<User>();
 
-    // 用户与令牌之间的映射
+    // Mapping between users and tokens
     private static Dictionary<string, string> userTokens = new Dictionary<string, string>();
 
     static void Main(string[] args)
@@ -34,7 +34,7 @@ namespace game
 
       Console.WriteLine("HttpServer-Demo: use http://localhost:8000/");
 
-      // ===== 启动 HTTP 服务器 =====
+      // ===== Start HTTP server =====
       var server = new TcpListener(IPAddress.Any, 8000);
       server.Start();
 
@@ -42,11 +42,11 @@ namespace game
       {
         try
         {
-          // 1. 等待客户端连接
+          //  Wait for client to connect
           var client = server.AcceptTcpClient();
           Console.WriteLine("Accept new client connections.");
 
-          // 处理客户端请求
+          // Process client requests
           HttpHandlers.HandleClient(client, userList, userTokens);
         }
         catch (Exception ex)

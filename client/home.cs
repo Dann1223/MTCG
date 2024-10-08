@@ -5,26 +5,26 @@ namespace client
 {
   public partial class home : Form
   {
-    // 用于显示用户信息的控件
+    //Controls for displaying user information
     private Label labelName;
     private Label labelGold;
     private Label labelToken;
 
-    // 接收用户信息的构造函数
+    // Constructor that receives user information
     public home(string name, int gold, string token)
     {
       InitializeComponent();
       InitializeUserInfo(name, gold, token);
     }
 
-    // 初始化用户信息的函数
+    // Function to initialize user information
     private void InitializeUserInfo(string name, int gold, string token)
     {
-      // 创建并设置显示用户信息的控件
+      // Create and set the control to display user information
       labelName = new Label
       {
         Text = $"Name: {name}",
-        Location = new System.Drawing.Point(10, 10), // 位置可以根据需要调整
+        Location = new System.Drawing.Point(10, 10), // The position can be adjusted as needed
         AutoSize = true
       };
       labelGold = new Label
@@ -40,7 +40,7 @@ namespace client
         AutoSize = true
       };
 
-      // 将控件添加到窗体
+      // Add controls to the form
       MTCGName.Text = $"Welcome, {name}";
       MTCGGold.Text = $"Gold: {gold}";
       MTCGToken.Text = $"Token: {token}";

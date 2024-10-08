@@ -6,8 +6,10 @@ using System.Windows.Forms;
 
 namespace client
 {
+  // The login class represents the login form for the client application
   public partial class login : Form
   {
+    // HttpClient instance for making HTTP requests to the server
     private readonly HttpClient httpClient;
 
     public login()
@@ -16,21 +18,22 @@ namespace client
       httpClient = new HttpClient();
     }
 
+    // Use the specified control name
     private async void MTCGLogin_Click(object sender, EventArgs e)
     {
-      string email = textEmail.Text; // 使用指定的控件名称
-      string password = textPassword.Text; // 使用指定的控件名称
+      string email = textEmail.Text;
+      string password = textPassword.Text;
 
       if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(password))
       {
-        MessageBox.Show("电子邮件和密码不能为空。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show("Email and Password cannot be empty。", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         return;
       }
 
-      // 创建登录请求，直接使用 Email 作为属性名
+      // Create a login request and use Email as the attribute name directly
       var loginRequest = new
       {
-        Email = email, // 使用 Email 作为属性名
+        Email = email,
         Password = password
       };
 
@@ -44,58 +47,63 @@ namespace client
 
         if (response.IsSuccessStatusCode)
         {
-          // 解析响应内容
+          // Parse the response content
           var loginResponse = JsonConvert.DeserializeObject<LoginResponse>(responseBody);
-          string name = loginResponse.Name; // 假设服务器返回的 JSON 包含名称
-          int gold = loginResponse.Gold; // 假设服务器返回的 JSON 包含金币数量
-          string token = loginResponse.Token; // 假设服务器返回的 JSON 包含令牌
+          string name = loginResponse.Name; 
+          int gold = loginResponse.Gold; 
+          string token = loginResponse.Token; 
 
-          // 显示 Home 窗体并传递用户信息
+          // Display the Home form and pass user information
           home homeForm = new home(name, gold, token);
           homeForm.Show();
-          this.Hide(); // 隐藏当前登录窗体
+          this.Hide(); 
         }
         else
         {
-          MessageBox.Show($"登录失败: {responseBody}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          MessageBox.Show($"Login Failed: {responseBody}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"请求错误: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show($"Request Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
     private void MTCGClear_Click(object sender, EventArgs e)
     {
-      // 清空输入框
+      // Clear the input box
       textEmail.Clear();
       textPassword.Clear();
     }
 
     private void textEmail_TextChanged(object sender, EventArgs e)
     {
-      // 电子邮件文本框内容变化时的逻辑（如有需要可实现）
+      
     }
 
     private void textPassword_TextChanged(object sender, EventArgs e)
     {
-      // 密码文本框内容变化时的逻辑（如有需要可实现）
+      
     }
 
     private void MTCGRegister_Click(object sender, EventArgs e)
     {
-      register registerForm = new register(); // 确保使用小写的类名
-      registerForm.Show(); // 显示注册窗体
-                           //this.Hide(); // 隐藏当前登录窗体
+      register registerForm = new register(); // Make sure to use lowercase class names
+      registerForm.Show(); 
+      //this.Hide(); // Hide the current login form
     }
 
-    // 将 LoginResponse 类嵌入到 login 类中
+    // Embed the LoginResponse class into the login class
     private class LoginResponse
     {
-      public string Name { get; set; } // 假设服务器返回的用户名称
-      public int Gold { get; set; } // 假设服务器返回的金币数量
-      public string Token { get; set; } // 假设服务器返回的令牌
+      public string Name { get; set; }
+      public int Gold { get; set; }
+      public string Token { get; set; } 
+    }
+
+    private void MTCGEmail_Click(object sender, EventArgs e)
+    {
+
     }
   }
 }

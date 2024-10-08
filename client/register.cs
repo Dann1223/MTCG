@@ -7,29 +7,35 @@ using Newtonsoft.Json;
 
 namespace client
 {
+  // The register class represents the registration form for the client application
   public partial class register : Form
   {
+    // HttpClient instance for making HTTP requests
     private readonly HttpClient httpClient;
 
+    // Constructor for the registration form
     public register()
     {
       InitializeComponent();
       httpClient = new HttpClient();
     }
 
+    // Event handler for the register button click
     private async void MTCGRegister_Click(object sender, EventArgs e)
     {
+      // Retrieve user input from text fields
       string email = textEmail.Text;
       string name = textName.Text;
       string password = textPassword.Text;
 
-      // 验证输入
+      // Validate input
       if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(name) || string.IsNullOrWhiteSpace(password))
       {
-        MessageBox.Show("用户名、电子邮件和密码不能为空。", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
-        return;
+        MessageBox.Show("Username, Email and Password cannot be empty.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        return; // Exit the method if validation fails
       }
 
+      // Create an anonymous object to hold the registration request data
       var registerRequest = new
       {
         Name = name,
@@ -37,36 +43,37 @@ namespace client
         Password = password
       };
 
+      // Serialize the registration request to JSON format
       var json = JsonConvert.SerializeObject(registerRequest);
       var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-      Console.WriteLine($"注册请求发送的数据: {json}");
+      Console.WriteLine($"Data sent in the registration request: {json}");
       try
       {
         HttpResponseMessage response = await httpClient.PostAsync("http://localhost:8000/register", content);
         string responseBody = await response.Content.ReadAsStringAsync();
 
-        // 显示更详细的错误信息
+        // Display more detailed error information
         if (response.IsSuccessStatusCode)
         {
-          MessageBox.Show($"注册成功！服务器响应: {responseBody}", "成功", MessageBoxButtons.OK, MessageBoxIcon.Information);
+          MessageBox.Show($"Successful registration！Server Response: {responseBody}", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
           this.Close();
           }
         else
         {
-          // 显示详细的错误信息
-          MessageBox.Show($"注册失败，状态码: {response.StatusCode}\n服务器响应: {responseBody}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+          // Display detailed error information
+          MessageBox.Show($"Registration failed，Status Code: {response.StatusCode}\nServer Response: {responseBody}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
       }
       catch (Exception ex)
       {
-        MessageBox.Show($"请求错误: {ex.Message}", "错误", MessageBoxButtons.OK, MessageBoxIcon.Error);
+        MessageBox.Show($"Request Error: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
       }
     }
 
     private void MTCGClear_Click(object sender, EventArgs e)
     {
-      // 清空输入框
+      // Clear the input box
       textEmail.Clear();
       textPassword.Clear();
       textName.Clear();
@@ -74,17 +81,22 @@ namespace client
 
     private void textEmail_TextChanged(object sender, EventArgs e)
     {
-      // 可选：响应电子邮件文本框内容变化
+      
     }
 
     private void textName_TextChanged(object sender, EventArgs e)
     {
-      // 可选：响应用户名文本框内容变化
+      
     }
 
     private void textPassword_TextChanged(object sender, EventArgs e)
     {
-      // 可选：响应密码文本框内容变化
+     
+    }
+
+    private void MTCGEmail_Click(object sender, EventArgs e)
+    {
+
     }
   }
 }

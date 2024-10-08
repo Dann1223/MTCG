@@ -40,7 +40,7 @@ namespace client
             // MTCGLogin
             // 
             this.MTCGLogin.Location = new System.Drawing.Point(135, 308);
-            this.MTCGLogin.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MTCGLogin.Margin = new System.Windows.Forms.Padding(4);
             this.MTCGLogin.Name = "MTCGLogin";
             this.MTCGLogin.Size = new System.Drawing.Size(112, 34);
             this.MTCGLogin.TabIndex = 0;
@@ -51,7 +51,7 @@ namespace client
             // MTCGRegister
             // 
             this.MTCGRegister.Location = new System.Drawing.Point(328, 308);
-            this.MTCGRegister.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MTCGRegister.Margin = new System.Windows.Forms.Padding(4);
             this.MTCGRegister.Name = "MTCGRegister";
             this.MTCGRegister.Size = new System.Drawing.Size(112, 34);
             this.MTCGRegister.TabIndex = 1;
@@ -62,7 +62,7 @@ namespace client
             // MTCGClear
             // 
             this.MTCGClear.Location = new System.Drawing.Point(510, 308);
-            this.MTCGClear.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.MTCGClear.Margin = new System.Windows.Forms.Padding(4);
             this.MTCGClear.Name = "MTCGClear";
             this.MTCGClear.Size = new System.Drawing.Size(112, 34);
             this.MTCGClear.TabIndex = 2;
@@ -79,6 +79,7 @@ namespace client
             this.MTCGEmail.Size = new System.Drawing.Size(62, 18);
             this.MTCGEmail.TabIndex = 3;
             this.MTCGEmail.Text = "E-Mail";
+            this.MTCGEmail.Click += new System.EventHandler(this.MTCGEmail_Click);
             // 
             // MTCGPassword
             // 
@@ -93,7 +94,7 @@ namespace client
             // textPassword
             // 
             this.textPassword.Location = new System.Drawing.Point(322, 205);
-            this.textPassword.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textPassword.Margin = new System.Windows.Forms.Padding(4);
             this.textPassword.Name = "textPassword";
             this.textPassword.Size = new System.Drawing.Size(300, 28);
             this.textPassword.TabIndex = 5;
@@ -102,7 +103,7 @@ namespace client
             // textEmail
             // 
             this.textEmail.Location = new System.Drawing.Point(322, 99);
-            this.textEmail.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.textEmail.Margin = new System.Windows.Forms.Padding(4);
             this.textEmail.Name = "textEmail";
             this.textEmail.Size = new System.Drawing.Size(300, 28);
             this.textEmail.TabIndex = 6;
@@ -120,7 +121,7 @@ namespace client
             this.Controls.Add(this.MTCGClear);
             this.Controls.Add(this.MTCGRegister);
             this.Controls.Add(this.MTCGLogin);
-            this.Margin = new System.Windows.Forms.Padding(4, 4, 4, 4);
+            this.Margin = new System.Windows.Forms.Padding(4);
             this.Name = "login";
             this.Text = "Form1";
             this.ResumeLayout(false);

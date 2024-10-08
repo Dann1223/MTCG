@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 
 namespace game
 {
+  // Abstract class Card, representing a basic card
   public abstract class Card
   {
     public string Name { get; set; }
@@ -26,19 +27,20 @@ namespace game
     }
   }
 
-
+  // MagicCard class, derived from Card, representing a card with additional effects
   public class MagicCard : Card
   {
+    // Special effect of the magic card
     public string Effect { get; set; }
 
-
+    // Constructor to initialize the magic card's name, type, damage, and effect
     public MagicCard(string name, string type, int damage, string effect)
         : base(name, type, damage)
     {
       Effect = effect;
     }
 
-
+    // Override the Display method to show the magic card's base information and effect
     public override void Display()
     {
       base.Display();
@@ -46,20 +48,19 @@ namespace game
     }
   }
 
-
+  // MonsterCard class, derived from Card, representing a card with a race attribute
   public class MonsterCard : Card
   {
-
     public string Race { get; set; }
 
-
+    // Constructor to initialize the monster card's name, type, damage, and race
     public MonsterCard(string name, string type, int damage, string race)
         : base(name, type, damage)
     {
       Race = race;
     }
 
-
+    // Override the Display method to show the monster card's base information and race
     public override void Display()
     {
       base.Display();

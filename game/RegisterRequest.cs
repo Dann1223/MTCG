@@ -1,6 +1,6 @@
 namespace game
 {
-  // 注册请求类
+  //Registration request class
   public class RegisterRequest
   {
     public string Name { get; set; }

@@ -8,36 +8,40 @@ using Newtonsoft.Json;
 
 namespace game
 {
+  // Static class containing methods to handle HTTP client requests
   public static class HttpHandlers
   {
+    // Method to handle client connection and process HTTP requests
     public static void HandleClient(TcpClient client, List<User> userList, Dictionary<string, string> userTokens)
     {
       using var stream = client.GetStream();
       using var reader = new StreamReader(stream);
       using var writer = new StreamWriter(stream) { AutoFlush = true };
 
-      // HTTP 请求 - 第一行
+      // HTTP Request
       string? requestLine = reader.ReadLine();
       if (string.IsNullOrEmpty(requestLine))
       {
-        Console.WriteLine("收到空请求。");
+        Console.WriteLine("Empty request received.");
         return;
       }
 
+      // Split the request line into parts (Method, Path, Version)
       var requestParts = requestLine.Split(' ');
       if (requestParts.Length < 3)
       {
-        Console.WriteLine("无效的 HTTP 请求行。");
-        SendResponse(writer, "402 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "无效的 HTTP 请求行" }));
+        Console.WriteLine("Invalid HTTP request line.");
+        SendResponse(writer, "402 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "Invalid HTTP request line." }));
         return;
       }
 
+      // Extract method, path, and version from the request line
       var method = requestParts[0];
       var path = requestParts[1];
       var version = requestParts[2];
-      Console.WriteLine($"方法: {method}, 路径: {path}, 版本: {version}");
+      Console.WriteLine($"method: {method}, path: {path}, Version: {version}");
 
-      // HTTP 请求 - 头部
+      // HTTP Request - Headers
       Dictionary<string, string> headers = new Dictionary<string, string>();
       int contentLength = 0;
       string? line;
@@ -50,15 +54,16 @@ namespace game
         var headerName = headerParts[0].Trim();
         var headerValue = headerParts[1].Trim();
         headers[headerName] = headerValue;
-        Console.WriteLine($"头部: {headerName} = {headerValue}");
+        Console.WriteLine($"head: {headerName} = {headerValue}");
 
+        // Get the content length if specified
         if (headerName.Equals("Content-Length", StringComparison.OrdinalIgnoreCase))
         {
           int.TryParse(headerValue, out contentLength);
         }
       }
 
-      // HTTP 请求 - 正文
+      // HTTP Request - Body
       string requestBody = string.Empty;
       if (contentLength > 0)
       {
@@ -68,14 +73,14 @@ namespace game
         {
           int read = reader.Read(buffer, totalRead, contentLength - totalRead);
           if (read == 0)
-            break; // 客户端关闭连接
+            break; // Client closes the connection
           totalRead += read;
         }
         requestBody = new string(buffer);
       }
-      Console.WriteLine($"正文: {requestBody}");
+      Console.WriteLine($"text: {requestBody}");
 
-      // 路由处理
+      //Route processing
       if (method.Equals("POST", StringComparison.OrdinalIgnoreCase))
       {
         if (path.Equals("/register", StringComparison.OrdinalIgnoreCase))
@@ -86,122 +91,127 @@ namespace game
         {
           HandleLogin(writer, requestBody, userList, userTokens);
         }
-        else
+        else // Handle unknown paths
         {
-          SendResponse(writer, "404 Not Found", "application/json", JsonConvert.SerializeObject(new { error = "未找到该端点" }));
+          SendResponse(writer, "404 Not Found", "application/json", JsonConvert.SerializeObject(new { error = "The endpoint was not found" }));
         }
       }
       else if (method.Equals("GET", StringComparison.OrdinalIgnoreCase))
       {
-        SendResponse(writer, "404 Not Found", "application/json", JsonConvert.SerializeObject(new { error = "未找到该端点" }));
+        SendResponse(writer, "404 Not Found", "application/json", JsonConvert.SerializeObject(new { error = "The endpoint was not found" }));
       }
       else
       {
-        SendResponse(writer, "405 Method Not Allowed", "application/json", JsonConvert.SerializeObject(new { error = "不允许该方法" }));
+        SendResponse(writer, "405 Method Not Allowed", "application/json", JsonConvert.SerializeObject(new { error = "This method is not allowed" }));
       }
 
       client.Close();
     }
 
+    // Method to handle user registration requests
     static void HandleRegister(StreamWriter writer, string requestBody, List<User> userList)
     {
       try
       {
-        // 检查请求体是否为空
+        // Check if the request body is empty
         if (string.IsNullOrWhiteSpace(requestBody))
         {
-          SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "请求正文不能为空" }));
+          SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "The request body cannot be empty" }));
           return;
         }
 
-        // 尝试将请求体解析为注册请求
+        // Try to parse the request body as a registration request
         var registerRequest = JsonConvert.DeserializeObject<RegisterRequest>(requestBody);
         if (registerRequest == null || string.IsNullOrWhiteSpace(registerRequest.Name) || string.IsNullOrWhiteSpace(registerRequest.Email) || string.IsNullOrWhiteSpace(registerRequest.Password))
         {
-          SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "无效的注册数据" }));
+          SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "Invalid registration data" }));
           return;
         }
 
-        // 检查用户名或电子邮件是否已经存在
+        // Check if username or email already exists
         if (userList.Any(u => u.Name.Equals(registerRequest.Name, StringComparison.OrdinalIgnoreCase)))
         {
-          SendResponse(writer, "409 Conflict", "application/json", JsonConvert.SerializeObject(new { error = "用户名已存在" }));
+          SendResponse(writer, "409 Conflict", "application/json", JsonConvert.SerializeObject(new { error = "Username already exists" }));
           return;
         }
 
         if (userList.Any(u => u.Email.Equals(registerRequest.Email, StringComparison.OrdinalIgnoreCase)))
         {
-          SendResponse(writer, "409 Conflict", "application/json", JsonConvert.SerializeObject(new { error = "电子邮件已存在" }));
+          SendResponse(writer, "409 Conflict", "application/json", JsonConvert.SerializeObject(new { error = "Email already exists" }));
           return;
         }
 
-        // 创建新用户并设置初始金币值
+        // Create a new user and set the initial gold coin value
         var newUser = new User { Name = registerRequest.Name, Email = registerRequest.Email, Password = registerRequest.Password, Gold = "20" };
         userList.Add(newUser);
-        Console.WriteLine($"用户 '{newUser.Name}' 注册成功。");
+        Console.WriteLine($"user '{newUser.Name}' Successful registration。");
 
-        // 返回成功响应
-        SendResponse(writer, "200 OK", "application/json", JsonConvert.SerializeObject(new { success = true, message = "用户注册成功", gold = newUser.Gold }));
+        // Return a successful response
+        SendResponse(writer, "200 OK", "application/json", JsonConvert.SerializeObject(new { success = true, message = "User registration successful", gold = newUser.Gold }));
       }
       catch (JsonException)
       {
-        SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "JSON 格式错误" }));
+        SendResponse(writer, "400 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "JSON Format Error" }));
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"注册错误: {ex.Message}");
-        SendResponse(writer, "500 Internal Server Error", "application/json", JsonConvert.SerializeObject(new { error = "内部服务器错误" }));
+        Console.WriteLine($"Registration Error: {ex.Message}");
+        SendResponse(writer, "500 Internal Server Error", "application/json", JsonConvert.SerializeObject(new { error = "Internal Server Error" }));
       }
     }
 
-
+    // Method to handle user login requests
     static void HandleLogin(StreamWriter writer, string requestBody, List<User> userList, Dictionary<string, string> userTokens)
     {
       try
       {
+        // Check if the request body is empty
         if (string.IsNullOrWhiteSpace(requestBody))
         {
-          SendResponse(writer, "402 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "请求正文不能为空" }));
+          SendResponse(writer, "402 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "The request body cannot be empty" }));
           return;
         }
 
         var loginRequest = JsonConvert.DeserializeObject<LoginRequest>(requestBody);
         if (loginRequest == null || string.IsNullOrWhiteSpace(loginRequest.Email) || string.IsNullOrWhiteSpace(loginRequest.Password))
         {
-          SendResponse(writer, "403 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "无效的登录数据" }));
+          SendResponse(writer, "403 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "Invalid login data" }));
           return;
         }
 
-        // 根据 Email 和 Password 查找用户
+        // Find users based on Email and Password
         var user = userList.FirstOrDefault(u => u.Email.Equals(loginRequest.Email, StringComparison.OrdinalIgnoreCase) && u.Password == loginRequest.Password);
         if (user == null)
         {
-          SendResponse(writer, "401 Unauthorized", "application/json", JsonConvert.SerializeObject(new { error = "无效的电子邮件或密码" }));
+          SendResponse(writer, "401 Unauthorized", "application/json", JsonConvert.SerializeObject(new { error = "Invalid email or password" }));
           return;
         }
 
-        // 生成 Token
+        // Generate a new token for the user
         string token = Guid.NewGuid().ToString();
-        userTokens[user.Name] = token; // 你可以保留用户名作为键
-        Console.WriteLine($"用户 '{user.Name}' 登录成功。令牌: {token}");
+        userTokens[user.Name] = token; // You can keep the username as a key
+        Console.WriteLine($"user '{user.Name}' Login successful. Token: {token}");
 
         SendResponse(writer, "200 OK", "application/json", JsonConvert.SerializeObject(new { success = true, name = user.Name, token = token, gold = user.Gold }));
       }
       catch (JsonException)
       {
-        SendResponse(writer, "410 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "JSON 格式错误" }));
+        // Handle JSON parsing errors
+        SendResponse(writer, "410 Bad Request", "application/json", JsonConvert.SerializeObject(new { error = "JSON Format Error" }));
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"登录错误: {ex.Message}");
-        SendResponse(writer, "500 Internal Server Error", "application/json", JsonConvert.SerializeObject(new { error = "内部服务器错误" }));
+        Console.WriteLine($"Login Error: {ex.Message}");
+        SendResponse(writer, "500 Internal Server Error", "application/json", JsonConvert.SerializeObject(new { error = "Internal Server Error" }));
       }
     }
 
+    // Method to send an HTTP response back to the client
     static void SendResponse(StreamWriter writer, string status, string contentType, string body)
     {
       try
       {
+        // Write the status line and headers
         writer.WriteLine($"HTTP/1.1 {status}");
         writer.WriteLine($"Content-Type: {contentType}");
         writer.WriteLine($"Content-Length: {Encoding.UTF8.GetByteCount(body)}");
@@ -211,7 +221,7 @@ namespace game
       }
       catch (Exception ex)
       {
-        Console.WriteLine($"发送响应错误: {ex.Message}");
+        Console.WriteLine($"Send Response Error: {ex.Message}");
       }
     }
   }

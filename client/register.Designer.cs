@@ -69,6 +69,7 @@
             this.MTCGEmail.Size = new System.Drawing.Size(62, 18);
             this.MTCGEmail.TabIndex = 2;
             this.MTCGEmail.Text = "E-Mail";
+            this.MTCGEmail.Click += new System.EventHandler(this.MTCGEmail_Click);
             // 
             // MTCGName
             // 
